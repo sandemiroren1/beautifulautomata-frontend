@@ -1,32 +1,78 @@
-import { useState, useCallback } from 'react';
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type Node, type NodeChange, type Edge, type EdgeChange } from '@xyflow/react';
-import '@xyflow/react/dist/style.css';
- 
-const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'Node 1' } },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'Node 2' } },
+import { useState, useCallback } from "react";
+import {
+  ReactFlow,
+  applyNodeChanges,
+  applyEdgeChanges,
+  addEdge,
+  type Node,
+  type NodeChange,
+  type Edge,
+  type EdgeChange,
+  Handle,
+  Position,
+} from "@xyflow/react";
+import "@xyflow/react/dist/style.css";
+import { createEdge, createSelfLoop } from "./FlowUtility";
+
+function AutomatonStateNode({ data }: { data: { label: string; accept?: boolean } }) {
+  return (
+    <div
+      className={`relative flex items-center justify-center rounded-full border-2  w-16 h-16 `}
+    >
+      {data.label}
+      {data.accept && (
+        <div className="absolute inset-1 rounded-full border-2 border-black pointer-events-none border-gray-950 dark:border-white"></div>
+      )}
+       {/* Top handles */}
+      <Handle type="target" position={Position.Top} id="top-left" style={{ left: '25%' }} />
+      <Handle type="target" position={Position.Top} id="top-right" style={{ left: '75%' }} />
+
+      {/* Right handles */}
+      <Handle type="source" position={Position.Right} id="right-top" style={{ top: '25%' }} />
+      <Handle type="source" position={Position.Right} id="right-bottom" style={{ top: '75%' }} />
+
+      {/* Bottom handles */}
+      <Handle type="source" position={Position.Bottom} id="bottom-left" style={{ left: '25%' }} />
+      <Handle type="source" position={Position.Bottom} id="bottom-right" style={{ left: '75%' }} />
+
+      {/* Left handles */}
+      <Handle type="target" position={Position.Left} id="left-top" style={{ top: '25%' }} />
+      <Handle type="target" position={Position.Left} id="left-bottom" style={{ top: '75%' }} />
+    </div>
+  );
+}
+
+const nodeTypes = { state: AutomatonStateNode };
+
+const initialNodes: Node[] = [
+  { id: "n1", position: { x: 0, y: 0 }, data: { label: "q₁" }, type: "state" },
+  { id: "n2", position: { x: 200, y: 0 }, data: { label: "q₂", accept: true }, type: "state" },
 ];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
- 
+
+const initialEdges: Edge[] = [
+  createEdge("1","n1","n2","a"),
+  createSelfLoop("2","n1","b"),
+];
+
 export default function AutomataFlow() {
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
- 
+
   const onNodesChange = useCallback(
-    (changes: NodeChange<{ id: string; position: { x: number; y: number; }; data: { label: string; }; }>[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
-    [],
+    (changes: NodeChange[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
+    []
   );
   const onEdgesChange = useCallback(
-    (changes: EdgeChange<Edge>[]) => setEdges((edgesSnapshot: Edge[]) => applyEdgeChanges(changes, edgesSnapshot)),
-    [],
+    (changes: EdgeChange[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    []
   );
   const onConnect = useCallback(
-    (params: any) => setEdges((edgesSnapshot: any[]) => addEdge(params, edgesSnapshot)),
-    [],
+    (params: any) => setEdges((edgesSnapshot) => addEdge({ ...params, markerEnd: { type: "arrowclosed" } }, edgesSnapshot)),
+    []
   );
- 
+
   return (
-    <div className='w-full h-[500px] border rounded-lg shadow'>
+    <div className="w-full h-[500px] border rounded-lg">
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -34,6 +80,7 @@ export default function AutomataFlow() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         fitView
+        nodeTypes={nodeTypes}
       />
     </div>
   );
