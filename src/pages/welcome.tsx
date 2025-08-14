@@ -1,14 +1,12 @@
 import { NavLink } from "react-router";
 
-import pkg from 'react-katex';
-import {NavButton} from '../components/nav-button'
-import Header from "~/components/header";
-import { AutomataFlow } from "~/components/automata-flow";
-const {BlockMath, InlineMath} = pkg;
+import {NavButton} from '../components/navbutton'
+import Header from "../components/header";
+import AutomataFlow from "../components/AutomataFlow";
 export function Welcome() {
   return (
     <main>
-      
+     <Header></Header>
       <div className="flex-1 flex flex-col items-center gap-16 min-h-0">
         <header className="flex flex-col items-center gap-9">
           <div className="w-[500px] max-w-[100vw] p-4">
@@ -27,7 +25,6 @@ export function Welcome() {
     </div>
   </nav>
 </div>
-    <AutomataFlow></AutomataFlow>
       </div>
     </main>
   );

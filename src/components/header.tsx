@@ -1,6 +1,7 @@
-import { NavLink } from "react-router";
-import logoDark from "../images/logo-dark.svg";
-import logoLight from "../images/logo-light.svg";
+import {NavLink} from "react-router";
+
+import logoDark from "../assets/logo-dark.svg";
+import logoLight from "../assets/logo-light.svg";
 
 export default function Header() {
   
