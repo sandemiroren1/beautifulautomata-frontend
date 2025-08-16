@@ -2,11 +2,15 @@ import React, { useState, useRef, useEffect } from "react";
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 
-const WordEntry = (props: { text: string; accept: boolean}) => {
+export interface WordData{
+    text: string;
+     accept: boolean;
+}
+const WordEntry = (props: {word : WordData; onDelete : (text: string) => void}) => {
   // We use hooks to declare "initial" states
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputVisible, setInputVisible] = useState(false);
-  const [text, setText] = useState(props.text);
+  const [text, setText] = useState(props.word.text);
 
   function onClickOutSide(e: MouseEvent) {
     // Check if user is clicking outside of <input>
@@ -29,11 +33,12 @@ const WordEntry = (props: { text: string; accept: boolean}) => {
 
   return (
     <React.Fragment>
+      <div className = "flex">
       {inputVisible ? (
         <input
           ref={inputRef} // Set the Ref
           value={text} // Now input value uses local state
-            className= {`p-3 box-border m-5 text-left text-lg font-medium text-black border rounded-lg dark:text-white`}
+            className= {`flex-1 p-3 box-border m-5 text-left text-lg font-medium text-black border rounded-lg dark:text-white`}
           onChange={e => {
             setText(e.target.value);
           }
@@ -41,11 +46,20 @@ const WordEntry = (props: { text: string; accept: boolean}) => {
         />
       ) : (
         <div 
-        className={`p-3 m-5 text-left text-lg overflow-hidden font-medium text-black 
-    border ${props.accept ? "border-green-500" : "border-red-500"} 
+        className={`flex-1 flex p-3 m-5 text-left text-lg overflow-hidden font-medium text-black 
+    border ${props.word.accept ? "border-green-500" : "border-red-500"} 
     rounded-lg dark:text-white`}
-        onClick={() => setInputVisible(true)}><InlineMath math = {text}></InlineMath></div>
+        onClick={() => setInputVisible(true)}>
+          <div className="flex-10">
+            <InlineMath math = {text}></InlineMath>
+          </div>
+          {<div className="flex-0.5 flex-right">
+            <button onClick={() => props.onDelete(props.word.text)} className = " text-sm font-medium focus:outline-none rounded-lg focus:z-10 focus:ring-4" >Delete</button>
+          </div>}
+          </div>
       )}
+      
+      </div>
     </React.Fragment>
   );
 };

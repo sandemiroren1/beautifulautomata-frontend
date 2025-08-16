@@ -17,7 +17,8 @@ import { useCallback, useState,useRef } from 'react';
 import { createNode } from '../components/FlowUtility';
 import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
-import WordEntry from '../components/word-entry-for-puzzle';
+import WordEntry, { type WordData } from '../components/word-entry-for-puzzle';
+import React from 'react';
 
 type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG" |undefined
 const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
@@ -36,7 +37,20 @@ export function CreatePuzzle() {
                             setCreationMode(x)
                                                       }}  />
   ));
+  let [words, setWords] = React.useState<WordData[]>([
+    {text : "4",accept:false},{text : "d",accept : true}
+  ]);
+  let counter = 0;
+  const handleDelete = React.useCallback((id: string) => {
+    setWords(prev => prev.filter(c => c.text !== id));
+  }, []);
 
+   const addCardAccepting =  React.useCallback(() => {
+    setWords(prev => [...prev, { text : `a_{${counter++}}`,accept : true }]);
+  }, []);
+  const addCardRejecting =  React.useCallback(() => {
+    setWords(prev => [...prev, { text : `a_{${counter++}}`,accept : false }]);
+  }, []);
   return (
     <main className="h-screen flex flex-col">
   <Header />
@@ -54,12 +68,13 @@ export function CreatePuzzle() {
 
     {/* Middle area */}
     <div className="flex-1 flex flex-col min-h-0 px-4">
-      <EditableInput text={defaultTitle} />
-      <div className="flex-1 flex flex-col border rounded-lg">
-        <WordEntry text="a" accept={false}></WordEntry>
-
-      </div>
-    </div>
+  <EditableInput text={defaultTitle} />
+  <div className="flex-1 flex flex-col border rounded-lg max-h-[1000px] overflow-y-auto">
+    {words.map(word => (
+      <WordEntry key={word.text} word={word} onDelete={handleDelete} />
+    ))}
+  </div>
+</div>
 
     {/* Right Sidebar */}
     <div className="w-[200px] space-y-6 px-4">
@@ -82,13 +97,13 @@ export function CreatePuzzle() {
         key={"AddAccepted"}
         buttonName={"Add Accepted Word"}
         selected={false}
-        onCommand={() => {}}
+        onCommand={addCardAccepting}
       />
       <AutomataTypeButton
         key={"AddRejected"}
         buttonName={"Add Rejected Word"}
         selected={false}
-        onCommand={() => {}}
+        onCommand={addCardRejecting}
       />
     </div>
   </div>
