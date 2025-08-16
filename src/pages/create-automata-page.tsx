@@ -20,34 +20,12 @@ type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG" |undefined
 const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
 
 import { createEdge, createSelfLoop } from "../components/FlowUtility";
+import EditableInput from '../components/title-of-puzzle';
+import EditablePuzzleInput from '../components/configurePuzzleText';
+import FlowBoard from '../components/FlowBoard';
+import { AutomatonStateNode } from '../components/AutomatonNode';
 
-function AutomatonStateNode({ data }: { data: { label: string; accept?: boolean } }) {
-  return (
-    <div
-      className={`relative flex items-center justify-center rounded-full border-2  w-16 h-16 `}
-    >
-      {data.label}
-      {data.accept && (
-        <div className="absolute inset-1 rounded-full border-2 border-black pointer-events-none border-gray-950 dark:border-white"></div>
-      )}
-       {/* Top handles */}
-      <Handle type="target" position={Position.Top} id="top-left" style={{ left: '25%' }} />
-      <Handle type="target" position={Position.Top} id="top-right" style={{ left: '75%' }} />
 
-      {/* Right handles */}
-      <Handle type="source" position={Position.Right} id="right-top" style={{ top: '25%' }} />
-      <Handle type="source" position={Position.Right} id="right-bottom" style={{ top: '75%' }} />
-
-      {/* Bottom handles */}
-      <Handle type="source" position={Position.Bottom} id="bottom-left" style={{ left: '25%' }} />
-      <Handle type="source" position={Position.Bottom} id="bottom-right" style={{ left: '75%' }} />
-
-      {/* Left handles */}
-      <Handle type="target" position={Position.Left} id="left-top" style={{ top: '25%' }} />
-      <Handle type="target" position={Position.Left} id="left-bottom" style={{ top: '75%' }} />
-    </div>
-  );
-}
 
 const nodeTypes = { state: AutomatonStateNode };
 export function CreateAutomata() {
@@ -67,25 +45,29 @@ export function CreateAutomata() {
       <div className="flex flex-1 min-h-0">
         {/* Left Sidebar */}
         <div className="max-w-[200px] w-full space-y-6 px-4">
-          <h1 className="py-2.5 px-5 mb-2 text-center text-lg font-medium text-black dark:text-white">
-            Create
+          <h1 className="py-2.5 px-5 mb-2 mx-2 text-center text-lg font-medium text-black dark:text-white">
+            Configuration
           </h1>
-          <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
-            {renderedButtons}
-          </nav>
+          <EditablePuzzleInput editable = {false} text={"a,b,c"} widgetName="Alphabet" />
+      {creationMode == "PDA" && (
+        <EditablePuzzleInput editable = {false}text={"\\$,A,B"} widgetName="Stack Alphabet" />
+      )}
+      {creationMode == "CFG" && (
+        <EditablePuzzleInput editable = {false}text={"A,B"} widgetName="Non-terminals" />
+      )}
+      {creationMode == "TM" && (
+        <EditablePuzzleInput editable = {false}text={"A,C"} widgetName="Tape Alphabet" />
+      )}
         </div>
 
         {/* React Flow Area */}
         <div className="flex-5 min-h-0">
            
 
-   <div>
-    <h1 className="py-2.5 px-5 mb-2 text-center text-lg font-medium text-black dark:text-white">
-            Title
-          </h1>
-    <div className="w-full h-[500px] border rounded-lg">
-      g
-    </div>
+      
+    <EditableInput editable = {false} text = {"L = \\{x | x\\text{ starts with }aa\\}"}></EditableInput>
+    <div className="max-w[1000px] h-[500px] border rounded-lg">
+      <FlowBoard></FlowBoard>
     </div>
   
         </div>

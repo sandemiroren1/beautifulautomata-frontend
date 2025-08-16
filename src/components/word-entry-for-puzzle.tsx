@@ -10,7 +10,7 @@ const WordEntry = (props: {word : WordData; onDelete : (text: string) => void}) 
   // We use hooks to declare "initial" states
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputVisible, setInputVisible] = useState(false);
-  const [text, setText] = useState(props.word.text);
+  const [wordState, setWord] = useState(props.word);
 
   function onClickOutSide(e: MouseEvent) {
     // Check if user is clicking outside of <input>
@@ -37,10 +37,10 @@ const WordEntry = (props: {word : WordData; onDelete : (text: string) => void}) 
       {inputVisible ? (
         <input
           ref={inputRef} // Set the Ref
-          value={text} // Now input value uses local state
+          value={wordState.text} // Now input value uses local state
             className= {`flex-1 p-3 box-border m-5 text-left text-lg font-medium text-black border rounded-lg dark:text-white`}
           onChange={e => {
-            setText(e.target.value);
+            setWord({text: e.target.value,accept : wordState.accept});
           }
         }
         />
@@ -51,7 +51,7 @@ const WordEntry = (props: {word : WordData; onDelete : (text: string) => void}) 
     rounded-lg dark:text-white`}
         onClick={() => setInputVisible(true)}>
           <div className="flex-10">
-            <InlineMath math = {text}></InlineMath>
+            <InlineMath math = {wordState.text}></InlineMath>
           </div>
           {<div className="flex-0.5 flex-right">
             <button onClick={() => props.onDelete(props.word.text)} className = " text-sm font-medium focus:outline-none rounded-lg focus:z-10 focus:ring-4" >Delete</button>

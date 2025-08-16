@@ -19,6 +19,7 @@ import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
 import WordEntry, { type WordData } from '../components/word-entry-for-puzzle';
 import React from 'react';
+import '../index.css'
 
 type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG" |undefined
 const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
@@ -26,6 +27,10 @@ const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
 const defaultTitle = "L = \\{... | \\text{Type your rules here} \\}"
 
 
+
+const defaultAlphabet = "a,b,c"
+const defaultTapeAlphabet = "A,C";
+const defaultStackAlphabet = "\$,A";
 
 
 export function CreatePuzzle() {
@@ -37,6 +42,7 @@ export function CreatePuzzle() {
                             setCreationMode(x)
                                                       }}  />
   ));
+  let [alphabet , setAlphabet] = useState<string>(defaultAlphabet);
   let [words, setWords] = React.useState<WordData[]>([
     {text : "4",accept:false},{text : "d",accept : true}
   ]);
@@ -68,7 +74,7 @@ export function CreatePuzzle() {
 
     {/* Middle area */}
     <div className="flex-1 flex flex-col min-h-0 px-4">
-  <EditableInput text={defaultTitle} />
+  <EditableInput editable = {true}text={defaultTitle} />
   <div className="flex-1 flex flex-col border rounded-lg max-h-[1000px] overflow-y-auto">
     {words.map(word => (
       <WordEntry key={word.text} word={word} onDelete={handleDelete} />
@@ -82,15 +88,15 @@ export function CreatePuzzle() {
         Configure
       </h1>
 
-      <EditablePuzzleInput text={"a,b,c"} widgetName="Alphabet" />
+      <EditablePuzzleInput editable = {true} text={alphabet} widgetName="Alphabet" />
       {creationMode == "PDA" && (
-        <EditablePuzzleInput text={"\\$,A,B"} widgetName="Stack Alphabet" />
+        <EditablePuzzleInput editable = {true} text={"\\$,A,B"} widgetName="Stack Alphabet" />
       )}
       {creationMode == "CFG" && (
-        <EditablePuzzleInput text={"A,B"} widgetName="Non-terminals" />
+        <EditablePuzzleInput editable = {true} text={"A,B"} widgetName="Non-terminals" />
       )}
       {creationMode == "TM" && (
-        <EditablePuzzleInput text={"A,C"} widgetName="Tape Alphabet" />
+        <EditablePuzzleInput editable = {true} text={"A,C"} widgetName="Tape Alphabet" />
       )}
 
       <AutomataTypeButton
@@ -104,6 +110,12 @@ export function CreatePuzzle() {
         buttonName={"Add Rejected Word"}
         selected={false}
         onCommand={addCardRejecting}
+      />
+      <AutomataTypeButton
+        key={"CreateThePuzzle"}
+        buttonName={"Publish Puzzle!"}
+        selected={true}
+        onCommand={()=>{}}
       />
     </div>
   </div>

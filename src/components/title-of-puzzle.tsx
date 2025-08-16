@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 
-const EditableInput = (props: { text: string; }) => {
+const EditableInput = (props: {editable : boolean; text: string; }) => {
   // We use hooks to declare "initial" states
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputVisible, setInputVisible] = useState(false);
@@ -29,20 +29,27 @@ const EditableInput = (props: { text: string; }) => {
 
   return (
     <React.Fragment>
-      {inputVisible ? (
+      {inputVisible&&props.editable ? (
         <input
           ref={inputRef} // Set the Ref
           value={text} // Now input value uses local state
-          className="w-full py-2.5 px-5 mb-2 text-center  text-lg font-medium text-black dark:text-white"
+          className="py-2.5 px-5 mb-2 text-center  text-lg font-medium text-black dark:text-white"
           onChange={e => {
             setText(e.target.value);
           }
         }
         />
       ) : (
-        <div 
-        className="w-full py-2.5 px-5 mb-2 text-center text-lg overflow-hidden font-medium text-black dark:text-white"
-        onClick={() => setInputVisible(true)}><InlineMath math = {text}></InlineMath></div>
+        <div
+  className="py-2.5 px-5 mb-2 text-center text-lg 
+              "
+  onClick={() => setInputVisible(true)}
+>
+  <div className= "overflow-x-auto justify-self-center max-w-[800px] ">
+    <InlineMath math={text} />
+  </div>
+  
+</div>
       )}
     </React.Fragment>
   );
