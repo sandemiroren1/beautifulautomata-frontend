@@ -2,7 +2,6 @@ import { NavLink } from "react-router";
 
 import {NavButton} from '../components/navbutton'
 import Header from "../components/header";
-import AutomataFlow from "../components/AutomataFlow";
 export function Welcome() {
   return (
     <main>
@@ -21,7 +20,7 @@ export function Welcome() {
   <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700 space-y-4">
     <div className="flex justify-between">
       <NavButton navLink="/create" buttonName="Create Puzzle"></NavButton>
-      <NavButton navLink="/join" buttonName="Solve Puzzle"></NavButton>
+      <NavButton navLink="/solve" buttonName="Solve Puzzle"></NavButton>
     </div>
   </nav>
 </div>
