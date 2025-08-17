@@ -13,20 +13,16 @@ import {
 } from "@xyflow/react";
 import { AutomataTypeButton } from '../components/automata-type-button';
 import Header from '../components/header';
-import { useCallback, useState,useRef } from 'react';
-import { createNode } from '../components/FlowUtility';
 import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
 import WordEntry, { type WordData } from '../components/word-entry-for-puzzle';
-import React from 'react';
+import React, { useState } from 'react';
 import '../index.css'
 
 type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG" |undefined
 const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
 
 const defaultTitle = "L = \\{... | \\text{Type your rules here} \\}"
-
-
 
 const defaultAlphabet = "a,b,c"
 const defaultTapeAlphabet = "A,C";
@@ -37,7 +33,7 @@ export function CreatePuzzle() {
 
 
   let [creationMode, setCreationMode] = useState<CreationMode>(automataTypes[0]);
-  const renderedButtons = automataTypes.map((x) => (
+  const renderedButtons  = automataTypes.map((x) => (
     <AutomataTypeButton key={x} buttonName={x as string} selected = {x==creationMode} onCommand = {()=> {
                             setCreationMode(x)
                                                       }}  />

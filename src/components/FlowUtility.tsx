@@ -12,7 +12,7 @@ export function createEdge(id: string, to : string, from : string,label : string
 }
 
 export function createNode(label : string){
-    return { id: label, position: { x: 50, y: 50 }, data: { label: label }, type: "state" }
+    return { id: label, position: { x: 50, y: 50 }, data: { label: label }, type: 'AutomatonStateNode' }
 }
 export function createSelfLoop(id: string, to : string,label : string) : Edge{
     return {
