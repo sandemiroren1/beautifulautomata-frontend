@@ -10,16 +10,17 @@ import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
 import FlowBoard from '../components/FlowBoard';
 
-import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type NodeChange, type EdgeChange } from '@xyflow/react';
+import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type NodeChange, type EdgeChange, type Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { AutomatonStateNode } from '../components/AutomatonNode';
-import { createNode } from '../components/FlowUtility';
+import { createEdge, createNode } from '../components/FlowUtility';
+import AddEdgePopup from '../components/pop-up';
  
 const initialNodes = [
   { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'q_1' } ,type:'AutomatonStateNode' },
   { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'q_2' },type:'AutomatonStateNode' },
 ];
-const initialEdges = [{ id: 'n1-n2', source: 'n1', target: 'n2' }];
+const initialEdges = [createEdge('0','n1','n2','a')];
  
 const nodeTypes = {
   AutomatonStateNode: AutomatonStateNode,
@@ -27,11 +28,28 @@ const nodeTypes = {
 
 let counter = 0;
 
+export type AddEdge= {
+  from : string;
+  to : string;
+  read : string;
+  writeOrPush : string |undefined;
+  readFromStack : string |undefined;
+  automataType : CreationMode;
+
+
+}
 export function CreateAutomata() {
 
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   let [creationMode, setCreationMode] = useState<CreationMode>(undefined);
-  
+  const openPopup = () => {
+    setIsPopupOpen(true);
+  };
+
+  const closePopup = () => {
+    setIsPopupOpen(false);
+  };
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
    
@@ -39,14 +57,10 @@ export function CreateAutomata() {
       (changes: NodeChange<{ id: string; position: { x: number; y: number; }; data: { label: string; }; type: string; }>[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
       [],
     );
-    const onEdgesChange = useCallback(
-      (changes: EdgeChange<{ id: string; source: string; target: string; }>[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
-      [],
-    );
-    const onConnect = useCallback(
-      (params: any) => setEdges((edgesSnapshot) => addEdge(params, edgesSnapshot)),
-      [],
-    );
+    const addEdge = useCallback(()=> {return (edge : AddEdge) => {
+      setEdges([...edges,createEdge(counter+++"",edge.to,edge.from,edge.read)])
+    }},[edges])
+    
   return (
     <main className="h-screen flex flex-col">
            <Header></Header>
@@ -80,8 +94,6 @@ export function CreateAutomata() {
             nodes={nodes}
               edges={edges}
               onNodesChange={onNodesChange}
-              onEdgesChange={onEdgesChange}
-              onConnect={onConnect}
             nodeTypes={nodeTypes}
             fitView
           />
@@ -95,8 +107,9 @@ export function CreateAutomata() {
           {<div>
           
           <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700  w-full">
-    {<AutomataTypeButton key={"Add"} buttonName={"Add State"} selected = {false} onCommand = {(()=>{console.log(counter);setNodes([...nodes,createNode(`q_${counter++}`)])})}  />}
-            
+    {<AutomataTypeButton key={"Add Node"} buttonName={"Add State"} selected = {false} onCommand = {(()=>{console.log(counter);setNodes([...nodes,createNode(`q_${counter++}`)])})}  />}
+    {<AutomataTypeButton key={"Add Edge"} buttonName={"Add Edge"} selected = {false} onCommand = {openPopup}  />}
+      {isPopupOpen && <AddEdgePopup addEdge = {addEdge} onClose={closePopup} />}
           </nav>
         </div>}
         </div>

@@ -19,7 +19,7 @@ import WordEntry, { type WordData } from '../components/word-entry-for-puzzle';
 import React, { useState } from 'react';
 import '../index.css'
 
-type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG" |undefined
+export type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG"
 const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
 
 const defaultTitle = "L = \\{... | \\text{Type your rules here} \\}"

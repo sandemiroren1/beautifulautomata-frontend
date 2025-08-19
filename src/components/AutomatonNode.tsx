@@ -30,7 +30,7 @@ export function AutomatonStateNode({ data }: { data: { label: string; accept?: b
   
     return (
     <div
-      className={`relative flex items-center justify-center rounded-full border-2  w-16 h-16 `}
+      className={`relative flex items-center justify-center rounded-full border-2  w-9 h-9 `}
     >
       
         <div className= "overflow-hidden text-xs justify-self-center ">
@@ -41,20 +41,20 @@ export function AutomatonStateNode({ data }: { data: { label: string; accept?: b
         <div className="absolute inset-1 rounded-full border-2 border-black pointer-events-none border-gray-950 dark:border-white"></div>
       )}
        {/* Top handles */}
-      <Handle type="target" position={Position.Top} id="top-left" style={{ left: '25%' }} />
-      <Handle type="target" position={Position.Top} id="top-right" style={{ left: '75%' }} />
+      <Handle type="target" position={Position.Top} id="top-left" style={{ left: '25%', visibility:"hidden"}} />
+      <Handle type="target" position={Position.Top} id="top-right" style={{ left: '75%' ,visibility:"hidden" }} />
 
       {/* Right handles */}
-      <Handle type="source" position={Position.Right} id="right-top" style={{ top: '25%' }} />
-      <Handle type="source" position={Position.Right} id="right-bottom" style={{ top: '75%' }} />
+      <Handle type="source" position={Position.Right} id="right-top" style={{ top: '25%' ,visibility:"hidden" }} />
+      <Handle type="source" position={Position.Right} id="right-bottom" style={{ top: '75%' ,visibility:"hidden"}} />
 
       {/* Bottom handles */}
-      <Handle type="source" position={Position.Bottom} id="bottom-left" style={{ left: '25%' }} />
-      <Handle type="source" position={Position.Bottom} id="bottom-right" style={{ left: '75%' }} />
+      <Handle type="source" position={Position.Bottom} id="bottom-left" style={{ left: '25%' ,visibility:"hidden"}} />
+      <Handle type="source" position={Position.Bottom} id="bottom-right" style={{ left: '75%' ,visibility:"hidden"}} />
 
       {/* Left handles */}
-      <Handle type="target" position={Position.Left} id="left-top" style={{ top: '25%' }} />
-      <Handle type="target" position={Position.Left} id="left-bottom" style={{ top: '75%' }} />
+      <Handle type="target" position={Position.Left} id="left-top" style={{ top: '25%',visibility:"hidden" }} />
+      <Handle type="target" position={Position.Left} id="left-bottom" style={{ top: '75%',visibility:"hidden" }} />
     </div>
   );
 }
