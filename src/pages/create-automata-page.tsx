@@ -8,24 +8,31 @@ const automataTypes : CreationMode[] = ["DFA", "NFA", "PDA", "TM", "CFG"];
 
 import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
-import FlowBoard from '../components/FlowBoard';
+import BiDirectionalEdge from '../components/bidirectional-edge';
 
 import { ReactFlow, applyNodeChanges, applyEdgeChanges, addEdge, type NodeChange, type EdgeChange, type Edge } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { AutomatonStateNode } from '../components/AutomatonNode';
-import { createEdge, createNode } from '../components/FlowUtility';
+import { createEdge, createNode, processLabel } from '../components/FlowUtility';
 import AddEdgePopup from '../components/pop-up';
+import ThemedEdge from '../components/AutomatonEdge';
+import CustomMathEdge from '../components/AutomatonEdge';
  
-const initialNodes = [
-  { id: 'n1', position: { x: 0, y: 0 }, data: { label: 'q_1' } ,type:'AutomatonStateNode' },
-  { id: 'n2', position: { x: 0, y: 100 }, data: { label: 'q_2' },type:'AutomatonStateNode' },
-];
-const initialEdges = [createEdge('0','n1','n2','a')];
- 
+const initialNodes: any[] | (() => any[]) = [
+]
+const initialEdges : Edge[] = [];
+
+
+
 const nodeTypes = {
   AutomatonStateNode: AutomatonStateNode,
 };
-
+const edgeTypes = {
+  bidirectional: BiDirectionalEdge,
+  custom : CustomMathEdge
+  //selfconnecting: SelfConnectingEdge,
+  //buttonedge: ButtonEdge,
+};
 let counter = 0;
 
 export type AddEdge= {
@@ -35,13 +42,20 @@ export type AddEdge= {
   writeOrPush : string |undefined;
   readFromStack : string |undefined;
   automataType : CreationMode;
+  leftOrRight : string | undefined
+  
 
 
 }
+let toForPopUp = "q_i"
+let fromForPopUp = "q_j" 
+let toHandle = "top-target"
+let fromHandle = "top-source"
+let automataMode : CreationMode = "DFA";
+
 export function CreateAutomata() {
 
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
   let [creationMode, setCreationMode] = useState<CreationMode>(undefined);
   const openPopup = () => {
     setIsPopupOpen(true);
@@ -52,15 +66,33 @@ export function CreateAutomata() {
   };
   const [nodes, setNodes] = useState(initialNodes);
   const [edges, setEdges] = useState(initialEdges);
-   
+  const alphabet = "a,b,c";
+  console.log(edges)
+
     const onNodesChange = useCallback(
       (changes: NodeChange<{ id: string; position: { x: number; y: number; }; data: { label: string; }; type: string; }>[]) => setNodes((nodesSnapshot) => applyNodeChanges(changes, nodesSnapshot)),
       [],
     );
-    const addEdge = useCallback(()=> {return (edge : AddEdge) => {
-      setEdges([...edges,createEdge(counter+++"",edge.to,edge.from,edge.read)])
-    }},[edges])
-    
+    const onEdgesChange = useCallback(
+    (changes: EdgeChange<Edge>[]) => setEdges((edgesSnapshot) => applyEdgeChanges(changes, edgesSnapshot)),
+    [],
+  );
+  const onConnect = useCallback(
+    (params: any) => {
+      toForPopUp = params.target!
+      fromForPopUp = params.source!  
+      toHandle = params.targetHandle!
+      fromHandle = params.sourceHandle!
+      console.log(params)
+      setIsPopupOpen(true);
+      },
+    [],
+  );
+
+    const addEdgeToList = useCallback((edge : AddEdge) => {
+      console.log(edge," handle: ",toHandle," fromHandle ", fromHandle)
+      setEdges([...edges,createEdge(counter+++"edge",edge.to,edge.from,processLabel(edge),toHandle,fromHandle,automataMode!)])
+    },[edges])
   return (
     <main className="h-screen flex flex-col">
            <Header></Header>
@@ -71,15 +103,15 @@ export function CreateAutomata() {
           <h1 className="py-2.5 px-5 mb-2 mx-2 text-center text-lg font-medium text-black dark:text-white">
             Configuration
           </h1>
-          <EditablePuzzleInput editable = {false} text={"a,b,c"} widgetName="Alphabet" />
+          <EditablePuzzleInput editable = {false} text={alphabet} setText={(useless : string)=>{}} widgetName="Alphabet" />
       {creationMode == "PDA" && (
-        <EditablePuzzleInput editable = {false}text={"\\$,A,B"} widgetName="Stack Alphabet" />
+        <EditablePuzzleInput editable = {false}text={"\\$,A,B"} setText={(useless : string)=>{}} widgetName="Stack Alphabet" />
       )}
       {creationMode == "CFG" && (
-        <EditablePuzzleInput editable = {false}text={"A,B"} widgetName="Non-terminals" />
+        <EditablePuzzleInput editable = {false}text={"A,B"}setText={(useless : string)=>{}} widgetName="Non-terminals" />
       )}
       {creationMode == "TM" && (
-        <EditablePuzzleInput editable = {false}text={"A,C"} widgetName="Tape Alphabet" />
+        <EditablePuzzleInput editable = {false}text={"A,C"} setText={(useless : string)=>{}} widgetName="Tape Alphabet" />
       )}
         </div>
 
@@ -94,7 +126,10 @@ export function CreateAutomata() {
             nodes={nodes}
               edges={edges}
               onNodesChange={onNodesChange}
+            edgeTypes={edgeTypes}
             nodeTypes={nodeTypes}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
             fitView
           />
     </div>
@@ -107,9 +142,9 @@ export function CreateAutomata() {
           {<div>
           
           <nav className="rounded-3xl border border-gray-200 p-6 dark:border-gray-700  w-full">
-    {<AutomataTypeButton key={"Add Node"} buttonName={"Add State"} selected = {false} onCommand = {(()=>{console.log(counter);setNodes([...nodes,createNode(`q_${counter++}`)])})}  />}
+    {<AutomataTypeButton key={"Add Node"} buttonName={"Add State"} selected = {false} onCommand = {(()=>{setNodes([...nodes,createNode(`q_${counter++}`,false,nodes.length==0)])})}  />}
     {<AutomataTypeButton key={"Add Edge"} buttonName={"Add Edge"} selected = {false} onCommand = {openPopup}  />}
-      {isPopupOpen && <AddEdgePopup addEdge = {addEdge} onClose={closePopup} />}
+      {isPopupOpen && <AddEdgePopup to = {toForPopUp} from = {fromForPopUp} addEdge = {addEdgeToList} onClose={closePopup} automataMode = {automataMode!} toHandle={toHandle} fromHandle={fromHandle}/>}
           </nav>
         </div>}
         </div>

@@ -2,11 +2,10 @@ import React, { useState, useRef, useEffect } from "react";
 import 'katex/dist/katex.min.css';
 import { BlockMath, InlineMath } from 'react-katex';
 
-const EditablePuzzleInput = (props: { text: string; widgetName : string ; editable : boolean}) => {
+const EditablePuzzleInput = (props: { text: string; setText : (q0: string) => void; widgetName : string ; editable : boolean} ) => {
   // We use hooks to declare "initial" states
   const inputRef = useRef<HTMLInputElement>(null);
   const [inputVisible, setInputVisible] = useState(false);
-  const [text, setText] = useState(props.text);
 
   function onClickOutSide(e: MouseEvent) {
     // Check if user is clicking outside of <input>
@@ -36,17 +35,17 @@ const EditablePuzzleInput = (props: { text: string; widgetName : string ; editab
       {inputVisible&&props.editable ? (
         <input
           ref={inputRef} // Set the Ref
-          value={text} // Now input value uses local state
+          value={props.text} // Now input value uses local state
           className="w-full py-2.5 px-5 mb-2 text-center overflow-x-auto text-lg font-medium text-black dark:text-white"
           onChange={e => {
-            setText(e.target.value);
+            props.setText(e.target.value);
           }
         }
         />
       ) : (
         <div 
         className="w-full py-2.5 px-5 mb-2 text-center text-lg overflow-x-auto font-medium text-black dark:text-white"
-        onClick={() => setInputVisible(true)}><InlineMath math = {text}></InlineMath></div>
+        onClick={() => setInputVisible(true)}><InlineMath math = {props.text}></InlineMath></div>
       )}
     </React.Fragment>
     </div>

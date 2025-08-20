@@ -16,7 +16,7 @@ import Header from '../components/header';
 import EditableInput from '../components/title-of-puzzle';
 import EditablePuzzleInput from '../components/configurePuzzleText';
 import WordEntry, { type WordData } from '../components/word-entry-for-puzzle';
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import '../index.css'
 
 export type CreationMode = "DFA" | "NFA"| "PDA"| "TM" | "CFG"
@@ -39,9 +39,14 @@ export function CreatePuzzle() {
                                                       }}  />
   ));
   let [alphabet , setAlphabet] = useState<string>(defaultAlphabet);
-  let [words, setWords] = React.useState<WordData[]>([
-    {text : "4",accept:false},{text : "d",accept : true}
+  const [words, setWords] = React.useState<WordData[]>([
   ]);
+  const [tapeOrStackWords, setTapeOrStackWords] = useState("A,B,C");
+
+  console.log(alphabet)
+  const changeAlphabet = useCallback((newAlphabet : string) => setAlphabet(newAlphabet),[alphabet])
+  const changeTapeOrStackAlphabet = useCallback((newAlphabet : string) => setTapeOrStackWords(newAlphabet),[alphabet])
+  
   let counter = 0;
   const handleDelete = React.useCallback((id: string) => {
     setWords(prev => prev.filter(c => c.text !== id));
@@ -56,7 +61,7 @@ export function CreatePuzzle() {
   return (
     <main className="h-screen flex flex-col">
   <Header />
-
+    
   <div className="flex flex-1 min-h-0">
     {/* Left Sidebar */}
     <div className="w-[200px] space-y-6 px-4">
@@ -84,17 +89,17 @@ export function CreatePuzzle() {
         Configure
       </h1>
 
-      <EditablePuzzleInput editable = {true} text={alphabet} widgetName="Alphabet" />
+      <EditablePuzzleInput editable = {true} text={alphabet} setText={changeAlphabet} widgetName="Alphabet" />
       {creationMode == "PDA" && (
-        <EditablePuzzleInput editable = {true} text={"\\$,A,B"} widgetName="Stack Alphabet" />
-      )}
-      {creationMode == "CFG" && (
-        <EditablePuzzleInput editable = {true} text={"A,B"} widgetName="Non-terminals" />
-      )}
-      {creationMode == "TM" && (
-        <EditablePuzzleInput editable = {true} text={"A,C"} widgetName="Tape Alphabet" />
-      )}
-
+         <EditablePuzzleInput editable = {true} text={tapeOrStackWords} setText = {changeTapeOrStackAlphabet} widgetName="Stack Alphabet" />
+       )}
+       {creationMode == "CFG" && (
+         <EditablePuzzleInput editable = {true} text={tapeOrStackWords} setText = {changeTapeOrStackAlphabet} widgetName="Non-terminals" />
+       )}
+       {creationMode == "TM" && (
+         <EditablePuzzleInput editable = {true} text={tapeOrStackWords} setText = {changeTapeOrStackAlphabet} widgetName="Tape Alphabet" />
+       )}
+      
       <AutomataTypeButton
         key={"AddAccepted"}
         buttonName={"Add Accepted Word"}
